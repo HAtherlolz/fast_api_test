@@ -14,7 +14,7 @@ def setup_database(app: FastAPI):
             user='postgres',
             password='1003kv2000',
             host='localhost',  # docker-composeのservice名
-            db='somedb',
+            db='fastapi',
         ),
         modules={
             'models': [
