@@ -65,6 +65,7 @@ from tortoise.models import Model
 
 class City(Model):
     id = fields.IntField(pk=True)
+    region = fields.CharField(50, blank=True, null=True)
     name = fields.CharField(50, unique=True)
     file = fields.CharField(2000, blank=True, null=True)
     timezone = fields.DateField()
