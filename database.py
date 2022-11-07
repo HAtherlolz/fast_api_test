@@ -18,14 +18,17 @@ def setup_database(app: FastAPI):
         ),
         modules={
             'models': [
-                'models',
+                'user.models',
                 "aerich.models"
             ],
         },
         generate_schemas=True,
         add_exception_handlers=True,
     )
-
+# user=getenv("DB_USER"),
+#             password=getenv("DB_PASSWORD"),
+#             host=getenv("DB_HOST"),
+#             db=getenv("DB_NAME"),
 
 TORTOISE_ORM = {
     "connections": {"default": get_db_uri(
@@ -36,7 +39,7 @@ TORTOISE_ORM = {
         )},
     "apps": {
         "models": {
-            "models": ["models", "aerich.models"],
+            "models": ["user.models", "aerich.models"],
             "default_connection": "default",
         },
     },

@@ -3,20 +3,14 @@ from tortoise import BaseDBAsyncClient
 
 async def upgrade(db: BaseDBAsyncClient) -> str:
     return """
-        CREATE TABLE IF NOT EXISTS "city" (
+        CREATE TABLE IF NOT EXISTS "user" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(50) NOT NULL UNIQUE,
-    "file" VARCHAR(2000),
-    "timezone" DATE NOT NULL
-);
-CREATE TABLE IF NOT EXISTS "user" (
-    "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(50) NOT NULL,
+    "first_name" VARCHAR(25),
+    "last_name" VARCHAR(25),
     "email" VARCHAR(50) NOT NULL UNIQUE,
     "password" VARCHAR(50) NOT NULL,
-    "date_created" DATE NOT NULL,
-    "date_updated" DATE NOT NULL,
-    "city_id" INT REFERENCES "city" ("id") ON DELETE CASCADE
+    "avatar" VARCHAR(1000),
+    "date_created" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS "aerich" (
     "id" SERIAL NOT NULL PRIMARY KEY,
