@@ -1,9 +1,6 @@
-import shutil
-from os import getenv
-
-from fastapi import FastAPI, UploadFile, File, Form
-from database import setup_database
-from user.endpoints import router as users_endpoints
+from fastapi import FastAPI
+from config.database import setup_database
+from src.user.endpoints import router as users_endpoints
 
 app = FastAPI()
 
@@ -11,10 +8,6 @@ setup_database(app)
 
 app.include_router(users_endpoints)
 
-
-SECRET_KEY = getenv('SECRET_KEY')
-ALGORITHM = getenv('ALGORITHM')
-ACCESS_TOKEN_EXPIRE_MINUTES = getenv('ACCESS_TOKEN_EXPIRE_MINUTES')
 
 # @app.get("/cities")
 # async def get_cities():

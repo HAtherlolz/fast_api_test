@@ -1,12 +1,13 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from .models import User
-from .serializers import User_Pydantic, UserIn_Pydantic, Token, CreateUser
-from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
+from .serializers import User_Pydantic, Token, CreateUser
+from .jwt_auth import get_password_hash, authenticate_user, create_access_token
+from config.config import Settings
 
+settings = Settings()
 router = APIRouter()
 
 
@@ -43,7 +44,7 @@ async def login_for_access_token(form_data: CreateUser = Depends()):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=30)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
