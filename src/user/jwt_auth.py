@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from .models import User
-from .serializers import TokenData, User_Pydantic
+from .serializers import TokenData, UserSerializer
 from config.config import Settings
 
 settings = Settings()
@@ -65,14 +65,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    user = get_user(email=token_data.email)
+    user = await get_user(email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
 
 
-async def get_current_active_user(current_user: User_Pydantic = Depends(get_current_user)):
-    if current_user.is_active:
+async def get_current_active_user(current_user: UserSerializer = Depends(get_current_user)):
+    if current_user.is_active is not True:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 

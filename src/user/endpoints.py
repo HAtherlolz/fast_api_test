@@ -3,8 +3,8 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from .models import User
-from .serializers import User_Pydantic, Token, CreateUser
-from .jwt_auth import get_password_hash, authenticate_user, create_access_token
+from .serializers import User_Pydantic, Token, CreateUser, UserSerializer
+from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
 from config.config import Settings
 
 settings = Settings()
@@ -22,9 +22,9 @@ async def get_target_city(user_id: int):
     return await User_Pydantic.from_queryset_single(User.get(id=user_id))
 
 
-# @router.get("/users/me/", response_model=User_Pydantic)
-# async def users_me(current_user: User_Pydantic = Depends(get_current_active_user)):
-#     return current_user
+@router.get("/users/me/", response_model=User_Pydantic)
+async def users_me(current_user: UserSerializer = Depends(get_current_active_user)):
+    return current_user
 
 
 @router.post("/users/create/")
