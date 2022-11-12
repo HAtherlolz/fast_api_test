@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from config.database import setup_database
 from src.user.endpoints import router as users_endpoints
+from src.unit.endpoints import router as units_endpoints
 
 app = FastAPI()
 
 setup_database(app)
 
 app.include_router(users_endpoints)
+app.include_router(units_endpoints)
 
 
 # @app.get("/cities")

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
+import urllib.parse
 
 from .config import Settings
 
@@ -8,10 +9,12 @@ settings = Settings()
 
 
 def get_db_uri(*, user, password, host, db):
+    password = urllib.parse.quote_plus(password)
     return f'postgres://{user}:{password}@{host}:5432/{db}'
 
 
 def setup_database(app: FastAPI):
+    print(settings.DB_USER)
     register_tortoise(
         app,
         db_url=get_db_uri(
@@ -22,6 +25,7 @@ def setup_database(app: FastAPI):
         ),
         modules={
             'models': [
+                'src.unit.models',
                 'src.user.models',
                 "aerich.models"
             ],
@@ -40,7 +44,7 @@ TORTOISE_ORM = {
         )},
     "apps": {
         "models": {
-            "models": ["src.user.models", "aerich.models"],
+            "models": ['src.unit.models', "src.user.models", "aerich.models"],
             "default_connection": "default",
         },
     },
