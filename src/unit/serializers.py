@@ -16,6 +16,8 @@ class UnitMapIdLAtLngSerializer(OurBaseModel):
     id: int
     lat: Union[float, None]
     lng: Union[float, None]
+    # category_id: Union[int, None]
+    # services_id: List[int]
 
 
 class ListUnitMapIdLAtLngSerializer(OurBaseModel):

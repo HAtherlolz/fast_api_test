@@ -14,7 +14,6 @@ def get_db_uri(*, user, password, host, db):
 
 
 def setup_database(app: FastAPI):
-    print(settings.DB_USER)
     register_tortoise(
         app,
         db_url=get_db_uri(
@@ -51,4 +50,4 @@ TORTOISE_ORM = {
 }
 
 
-Tortoise.init_models(["models"], "models")
+Tortoise.init_models(["src.unit.models", "src.user.models"], "models")

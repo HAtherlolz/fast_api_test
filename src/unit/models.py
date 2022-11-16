@@ -12,7 +12,7 @@ class Unit(Model):
     manufacturer = fields.ForeignKeyField('models.Manufacturer', on_delete=fields.SET_NULL, null=True, blank=True)
     description = fields.TextField(null=True, blank=True)
     features = fields.TextField(null=True, blank=True)
-    services = fields.ManyToManyField('models.Service', blank=True, db_index=True)
+    services = fields.ManyToManyField('models.Service', related_name="unit_services", blank=True, db_index=True)
     owner = fields.ForeignKeyField(
         'models.User', on_delete=fields.CASCADE, related_name='units', null=True, blank=True, db_index=True
     )
@@ -76,8 +76,11 @@ class Unit(Model):
 
 class ServiceCategory(Model):
     """ Service's categories model """
-
+    id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, null=False, blank=False, default='Other', unique=True, db_index=True)
+
+    class Meta:
+        table = 'main_app_servicecategory'
 
     def __str__(self):
         return f'{self.name}'
@@ -92,6 +95,9 @@ class Service(Model):
         'models.ServiceCategory', related_name='service_category', db_index=True
     )
 
+    class Meta:
+        table = 'main_app_service'
+
     def __str__(self):
         # categories = [category.name for category in self.category.all()]
         return f'{self.id} {self.name}'
@@ -104,6 +110,9 @@ class Category(Model):
         max_length=255, null=False, blank=False, default='Category name', unique=True, db_index=True)
     parent = fields.ForeignKeyField('models.Category', on_delete=fields.SET_NULL, null=True, blank=True, db_index=True)
     level = fields.SmallIntField(default=1, null=False, db_index=True)
+
+    class Meta:
+        table = 'main_app_category'
 
     def __str__(self):
         if self.parent and self.parent.parent:
