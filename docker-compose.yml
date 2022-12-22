@@ -5,7 +5,7 @@ services:
     build: .
     restart: always
     env_file: .env
-    command: uvicorn main:app --host 0.0.0.0
+    command: uvicorn main:app --host 0.0.0.0 --port 5000
     volumes:
      - .:/app
     ports:
