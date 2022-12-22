@@ -47,4 +47,4 @@ TORTOISE_ORM = {
 }
 
 
-Tortoise.init_models(["models"], "models")
+Tortoise.init_models(["src.user.models"], "models")

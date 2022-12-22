@@ -27,3 +27,7 @@ class UserSerializer(BaseModel):
 class CreateUser(BaseModel):
     email: EmailStr
     password: Union[str, None] = None
+
+
+class Uuid(BaseModel):
+    uuid: str

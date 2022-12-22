@@ -16,3 +16,14 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_NAME: str = os.getenv("DB_NAME")
+
+    # SMTP settings
+    MAIL_USERNAME: str = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD")
+    MAIL_FROM: str = os.getenv("MAIL_FROM")
+    MAIL_PORT: int = os.getenv("MAIL_PORT")
+    MAIL_SERVER: str = os.getenv("MAIL_SERVER")
+    MAIL_STARTTLS: bool = os.getenv("MAIL_STARTTLS")
+    MAIL_SSL_TLS: bool = os.getenv("MAIL_SSL_TLS")
+    USE_CREDENTIALS: bool = os.getenv("USE_CREDENTIALS")
+    VALIDATE_CERTS: bool = os.getenv("VALIDATE_CERTS")

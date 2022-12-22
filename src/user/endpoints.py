@@ -1,21 +1,26 @@
+import base64
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from .models import User
-from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic
-from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
 from config.config import Settings
+from .models import User
+from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic, Uuid
+from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
+from .services import send_email, send_with_template, encode_uuid, decode_uuid
+
 
 settings = Settings()
 router_user = APIRouter()
 
 
 @router_user.post("/users/create/")
-async def create_user(form_data: CreateUser = Depends()):
+async def create_user(user: CreateUser):
     """ Create an user with a hashed password"""
-    hashed_password = get_password_hash(form_data.password)
-    user_obj = await User.create(email=form_data.email, password=hashed_password, is_active=True)
+    hashed_password = get_password_hash(user.password)
+    user_obj = await User.create(email=user.email, password=hashed_password)
+    uuid = await encode_uuid(str(user_obj.id))
+    await send_with_template(user_obj.email, uuid)
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
 
@@ -44,6 +49,19 @@ async def update_user(user_data: UserSerializer, user: UserSerializer = Depends(
 @router_user.delete('/user/delete/', status_code=204)
 async def delete_user(user: UserSerializer = Depends(get_current_active_user)):
     return await User.filter(id=user.id).delete()
+
+
+@router_user.post('/user/email/activation/', status_code=201, response_model=User_Pydantic)
+async def email_ativation(uuid: Uuid):
+    user_id = await decode_uuid(uuid.uuid)
+    user = await User.get(id=user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Wrong uuid",)
+    if user.is_active:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The user is already activated", )
+    user.is_active = True
+    await user.save(update_fields=['is_active'])
+    return await User_Pydantic.from_queryset_single(User.get(id=user.id))
 
 
 @router_user.post("/token", response_model=Token)
