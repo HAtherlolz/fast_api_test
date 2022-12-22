@@ -30,15 +30,20 @@ async def get_target_user(user_id: int):
     return await User_Pydantic.from_queryset_single(User.get(id=user_id))
 
 
+@router_user.get("/users/me/", response_model=User_Pydantic)
+async def users_me(current_user: UserSerializer = Depends(get_current_active_user)):
+    return current_user
+
+
 @router_user.put('/user/update/', response_model=User_Pydantic)
 async def update_user(user_data: UserSerializer, user: UserSerializer = Depends(get_current_active_user)):
     await User.filter(id=user.id).update(**user_data.dict(exclude_unset=True))
     return await User_Pydantic.from_queryset_single(User.get(id=user.id))
 
 
-@router_user.get("/users/me/", response_model=User_Pydantic)
-async def users_me(current_user: UserSerializer = Depends(get_current_active_user)):
-    return current_user
+@router_user.delete('/user/delete/', status_code=204)
+async def delete_user(user: UserSerializer = Depends(get_current_active_user)):
+    return await User.filter(id=user.id).delete()
 
 
 @router_user.post("/token", response_model=Token)
