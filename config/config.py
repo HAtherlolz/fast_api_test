@@ -27,3 +27,11 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = os.getenv("MAIL_SSL_TLS")
     USE_CREDENTIALS: bool = os.getenv("USE_CREDENTIALS")
     VALIDATE_CERTS: bool = os.getenv("VALIDATE_CERTS")
+
+    # Allowed Hosts
+    BACKEND_CORS_ORIGINS: list = [
+        "http://localhost",
+        "http://localhost:4200",
+        "http://localhost:3000",
+        "http://localhost:8080",
+    ]

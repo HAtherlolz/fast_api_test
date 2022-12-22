@@ -3,6 +3,7 @@ env/
 venv/
 .vscode/
 
+.idea/
 .env
 .env.nginx
 __pycache__/
