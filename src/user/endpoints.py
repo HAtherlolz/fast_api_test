@@ -65,8 +65,8 @@ async def email_ativation(uuid: Uuid):
 
 
 @router_user.post("/token", response_model=Token)
-async def login_for_access_token(form_data: CreateUser = Depends()):
-    user = await authenticate_user(form_data.email, form_data.password)
+async def login_for_access_token(user: CreateUser):
+    user = await authenticate_user(user.email, user.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
