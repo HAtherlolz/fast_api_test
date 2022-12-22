@@ -6,7 +6,11 @@ from src.user.endpoints import router_user
 
 settings = Settings()
 
-app = FastAPI()
+app = FastAPI(
+    title="IrohAxi",
+    description="Authors - IrohWeb and Axizy",
+    version="0.0.1",
+)
 
 setup_database(app)
 
