@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     USE_CREDENTIALS: bool = os.getenv("USE_CREDENTIALS")
     VALIDATE_CERTS: bool = os.getenv("VALIDATE_CERTS")
 
+    # Bucket
+    AWS_BUCKET_REGION: str = os.getenv("AWS_BUCKET_REGION")
+    AWS_BUKCET_NAME: str = os.getenv("AWS_BUKCET_NAME")
+    AWS_BUCKET_DEFAULT_AVATAR_PATH: str = f"https://{AWS_BUKCET_NAME}.s3.amazonaws.com/default/UserProfile_small.jpg"
+    AWS_BUCKET_KEY_ID: str = os.getenv("AWS_BUCKET_KEY_ID")
+    AWS_BUCKET_SECRET_KEY: str = os.getenv("AWS_BUCKET_SECRET_KEY")
+
     # Allowed Hosts
     BACKEND_CORS_ORIGINS: list = [
         "http://localhost",

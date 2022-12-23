@@ -1,4 +1,5 @@
 from typing import Union
+from fastapi import File
 from pydantic import BaseModel, EmailStr
 from tortoise.contrib.pydantic import pydantic_model_creator
 
@@ -22,6 +23,13 @@ class UserSerializer(BaseModel):
     first_name: Union[str, None]
     last_name: Union[str, None]
     # is_active: Union[str, None]
+
+
+class UserImage(BaseModel):
+    email: Union[str, None]
+    first_name: Union[str, None]
+    last_name: Union[str, None]
+    # avatar: File()
 
 
 class CreateUser(BaseModel):

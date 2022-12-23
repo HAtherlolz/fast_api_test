@@ -1,12 +1,11 @@
 from datetime import timedelta
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 
 from config.config import Settings
 from .models import User
 from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic, Uuid
 from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
-from .services import encode_uuid, decode_uuid
+from .services import encode_uuid, decode_uuid, upload_file_to_s3
 
 
 settings = Settings()
@@ -17,7 +16,9 @@ router_user = APIRouter()
 async def create_user(user: CreateUser):
     """ Create an user with a hashed password"""
     hashed_password = get_password_hash(user.password)
-    user_obj = await User.create(email=user.email, password=hashed_password, is_active=True)
+    user_obj = await User.create(
+        email=user.email, password=hashed_password, is_active=True, avatar=settings.AWS_BUCKET_DEFAULT_AVATAR_PATH
+    )
     # uuid = await encode_uuid(str(user_obj.id))
     # await send_with_template(user_obj.email, uuid)
     return await User_Pydantic.from_tortoise_orm(user_obj)
@@ -42,6 +43,14 @@ async def users_me(current_user: UserSerializer = Depends(get_current_active_use
 @router_user.put('/user/update/', response_model=User_Pydantic)
 async def update_user(user_data: UserSerializer, user: UserSerializer = Depends(get_current_active_user)):
     await User.filter(id=user.id).update(**user_data.dict(exclude_unset=True))
+    return await User_Pydantic.from_queryset_single(User.get(id=user.id))
+
+
+@router_user.put('/user/update/avatar/', response_model=User_Pydantic)
+async def update_user(file: UploadFile = File(...), user: UserSerializer = Depends(get_current_active_user)):
+    image_path = 'avatars/' + f'user_{user.id}/' + file.filename
+    user.avatar = await upload_file_to_s3(file, image_path)
+    await user.save(update_fields=['avatar'])
     return await User_Pydantic.from_queryset_single(User.get(id=user.id))
 
 
