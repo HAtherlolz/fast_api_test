@@ -8,8 +8,27 @@ from pydantic import BaseModel, EmailStr
 
 from config.config import Settings
 from .serializers import User_Pydantic
+from ..utils.email import send_email
 
 settings = Settings()
+
+
+def send_test_email(email_to: str, token: str):
+    """
+        send activation email
+    """
+    project_name = settings.EMAILS_FROM_NAME
+    subject = f"{project_name} - Test email"
+    with open(Path(__file__).parent.parent / 'email_templates' / "registration.html") as f:
+        template_str = f.read()
+    print(email_to)
+    print(token)
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={"protocol": "http", "domain": "127.0.0.1:8000", "url": f"token={token}"},
+    )
 
 
 # conf = ConnectionConfig(
@@ -63,17 +82,6 @@ settings = Settings()
 #     )
 #     fm = FastMail(conf)
 #     await fm.send_message(message)
-
-
-async def encode_uuid(id: str) -> str:
-    encoded_id = id.encode('ascii')
-    base64_bytes = base64.urlsafe_b64encode(encoded_id).rstrip(b'\n=').decode('ascii')
-    return base64_bytes
-
-
-async def decode_uuid(uuid: str) -> int:
-    uuid = uuid.encode('ascii')
-    return int(base64.urlsafe_b64decode(uuid.ljust(len(uuid) + len(uuid) % 4, b'=')))
 
 
 async def upload_file_to_s3(file: UploadFile, image_path: str) -> str:

@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # SMTP settings
     MAIL_USERNAME: str = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD")
+    EMAILS_FROM_NAME: str = "The IrohWeb and Axizy Band"
     MAIL_FROM: str = os.getenv("MAIL_FROM")
     MAIL_PORT: int = os.getenv("MAIL_PORT")
     MAIL_SERVER: str = os.getenv("MAIL_SERVER")

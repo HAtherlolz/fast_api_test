@@ -1,5 +1,4 @@
 from typing import Union
-from fastapi import File
 from pydantic import BaseModel, EmailStr
 from tortoise.contrib.pydantic import pydantic_model_creator
 
@@ -37,5 +36,5 @@ class CreateUser(BaseModel):
     password: Union[str, None] = None
 
 
-class Uuid(BaseModel):
-    uuid: str
+class EmailActivationToken(BaseModel):
+    token: str
