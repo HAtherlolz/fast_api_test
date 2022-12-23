@@ -9,6 +9,8 @@ asyncpg==0.27.0
 Babel==2.11.0
 bcrypt==4.0.1
 blinker==1.5
+boto3==1.26.36
+botocore==1.29.36
 cachetools==5.2.0
 certifi==2022.12.7
 cffi==1.15.1
@@ -23,7 +25,6 @@ dnspython==2.2.1
 ecdsa==0.18.0
 email-validator==1.3.0
 fastapi==0.85.1
-fastapi-mail==1.2.0
 getenv==0.2.0
 h11==0.14.0
 httptools==0.5.0
@@ -31,6 +32,7 @@ idna==3.4
 install==1.3.5
 iso8601==1.1.0
 Jinja2==3.1.2
+jmespath==1.0.1
 lxml==4.9.2
 MarkupSafe==2.1.1
 passlib==1.7.4
@@ -49,12 +51,14 @@ pytzdata==2020.1
 PyYAML==6.0
 requests==2.28.1
 rsa==4.9
+s3transfer==0.6.0
 six==1.16.0
 sniffio==1.3.0
 starlette==0.20.4
 tomlkit==0.11.6
 tortoise-orm==0.19.2
 typing_extensions==4.4.0
+-e git+https://github.com/HAtherlolz/fast_api_test.git@46832c46661e7644a7c66380da843269acdeeb02#egg=UNKNOWN
 urllib3==1.26.13
 uvicorn==0.19.0
 uvloop==0.17.0
