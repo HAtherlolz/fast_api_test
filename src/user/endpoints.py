@@ -5,7 +5,7 @@ from config.config import Settings
 from .models import User
 from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic, Uuid
 from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
-from .services import encode_uuid, decode_uuid, upload_file_to_s3
+from .services import encode_uuid, decode_uuid, upload_file_to_s3, delete_file_to_s3
 
 
 settings = Settings()
@@ -47,8 +47,10 @@ async def update_user(user_data: UserSerializer, user: UserSerializer = Depends(
 
 
 @router_user.put('/user/update/avatar/', response_model=User_Pydantic)
-async def update_user(file: UploadFile = File(...), user: UserSerializer = Depends(get_current_active_user)):
+async def update_user_avatar(file: UploadFile = File(...), user: UserSerializer = Depends(get_current_active_user)):
     image_path = 'avatars/' + f'user_{user.id}/' + file.filename
+    if user.avatar != settings.AWS_BUCKET_DEFAULT_AVATAR_PATH and user.avatar is not None:
+        await delete_file_to_s3(user.avatar)
     user.avatar = await upload_file_to_s3(file, image_path)
     await user.save(update_fields=['avatar'])
     return await User_Pydantic.from_queryset_single(User.get(id=user.id))

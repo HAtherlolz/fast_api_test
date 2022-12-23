@@ -85,3 +85,11 @@ async def upload_file_to_s3(file: UploadFile, image_path: str) -> str:
     bucket.upload_fileobj(file.file, image_path, ExtraArgs={"ACL": "public-read"})
     uploaded_file_url = f"https://{settings.AWS_BUKCET_NAME}.s3.amazonaws.com/{image_path}"
     return uploaded_file_url
+
+
+async def delete_file_to_s3(image_path: str) -> None:
+    """ Upload file to s3 bucket """
+    s3 = boto3.resource(
+        "s3", aws_access_key_id=settings.AWS_BUCKET_KEY_ID, aws_secret_access_key=settings.AWS_BUCKET_SECRET_KEY
+    )
+    s3.Object(settings.AWS_BUKCET_NAME, image_path[36:]).delete()
