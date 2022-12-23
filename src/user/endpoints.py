@@ -1,4 +1,3 @@
-import base64
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -7,7 +6,7 @@ from config.config import Settings
 from .models import User
 from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic, Uuid
 from .jwt_auth import get_password_hash, authenticate_user, create_access_token, get_current_active_user
-from .services import encode_uuid, decode_uuid
+from .services import send_with_template, encode_uuid, decode_uuid
 
 
 settings = Settings()
@@ -20,7 +19,7 @@ async def create_user(user: CreateUser):
     hashed_password = get_password_hash(user.password)
     user_obj = await User.create(email=user.email, password=hashed_password, is_active=True)
     uuid = await encode_uuid(str(user_obj.id))
-    # await send_with_template(user_obj.email, uuid)
+    await send_with_template(user_obj.email, uuid)
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
 
