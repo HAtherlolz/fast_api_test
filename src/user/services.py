@@ -21,13 +21,11 @@ def send_test_email(email_to: str, token: str):
     subject = f"{project_name} - Test email"
     with open(Path(__file__).parent.parent / 'email_templates' / "registration.html") as f:
         template_str = f.read()
-    print(email_to)
-    print(token)
     send_email(
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
-        environment={"protocol": "http", "domain": "127.0.0.1:8000", "url": f"token={token}"},
+        environment={"protocol": "http", "domain": "127.0.0.1:8000", "url": token},
     )
 
 
