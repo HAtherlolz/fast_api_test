@@ -21,7 +21,7 @@ class UserSerializer(BaseModel):
     email: Union[str, None]
     first_name: Union[str, None]
     last_name: Union[str, None]
-    is_active: Union[str, None]
+    # is_active: Union[str, None]
 
 
 class CreateUser(BaseModel):
