@@ -25,7 +25,7 @@ def send_test_email(email_to: str, token: str):
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
-        environment={"protocol": "http", "domain": "127.0.0.1:8000", "url": token},
+        environment={"protocol": "http", "domain": "localhost:8080", "url": token},
     )
 
 
