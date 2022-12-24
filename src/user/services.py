@@ -1,13 +1,13 @@
-import base64
+from datetime import timedelta
+
 import boto3
 
 from fastapi import UploadFile
 from pathlib import Path
-from pydantic import BaseModel, EmailStr
-# from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 
 from config.config import Settings
 from .serializers import User_Pydantic
+from .jwt_auth import create_access_token
 from ..utils.email import send_email
 
 settings = Settings()
@@ -29,59 +29,6 @@ def send_test_email(email_to: str, token: str):
     )
 
 
-# conf = ConnectionConfig(
-#     MAIL_USERNAME=settings.MAIL_USERNAME,
-#     MAIL_PASSWORD=settings.MAIL_PASSWORD,
-#     MAIL_FROM=settings.MAIL_FROM,
-#     MAIL_PORT=settings.MAIL_PORT,
-#     MAIL_SERVER=settings.MAIL_SERVER,
-#     MAIL_STARTTLS=settings.MAIL_STARTTLS,
-#     MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
-#     USE_CREDENTIALS=settings.USE_CREDENTIALS,
-#     VALIDATE_CERTS=settings.VALIDATE_CERTS,
-#     TEMPLATE_FOLDER=Path(__file__).parent.parent / 'email_templates'
-# )
-#
-#
-# class EmailSchema(BaseModel):
-#     email: list[EmailStr]
-#
-#
-# html = """
-#     <p>Thanks for using Fastapi-mail</p>
-# """
-#
-#
-# async def send_with_template(email: EmailSchema, uuid: str):
-#     user_dict = {
-#         "protocol": 'http',
-#         "domain": "127.0.0.1:8000",
-#         "url": f"uuid={uuid}"
-#     }
-#
-#     message = MessageSchema(
-#         subject="Fastapi-Mail module",
-#         recipients=[email],
-#         template_body=user_dict,
-#         subtype=MessageType.html,
-#         )
-#
-#     fm = FastMail(conf)
-#     await fm.send_message(message, template_name="registration.html")
-
-
-# async def send_email(email: EmailSchema) -> None:
-#     """ Email sending """
-#     message = MessageSchema(
-#         subject="Fastapi-Mail module",
-#         recipients=[email],
-#         body=html,
-#         subtype=MessageType.html
-#     )
-#     fm = FastMail(conf)
-#     await fm.send_message(message)
-
-
 async def upload_file_to_s3(file: UploadFile, image_path: str) -> str:
     """ Upload file to s3 bucket """
     s3 = boto3.resource(
@@ -99,3 +46,15 @@ async def delete_file_to_s3(image_path: str) -> None:
         "s3", aws_access_key_id=settings.AWS_BUCKET_KEY_ID, aws_secret_access_key=settings.AWS_BUCKET_SECRET_KEY
     )
     s3.Object(settings.AWS_BUKCET_NAME, image_path[36:]).delete()
+
+
+async def get_jwt(user: User_Pydantic) -> str:
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
+    user_info = {
+        "sub": user.email,
+        "user_id": user.id
+    }
+    access_token = create_access_token(
+        data=user_info, expires_delta=access_token_expires
+    )
+    return access_token
