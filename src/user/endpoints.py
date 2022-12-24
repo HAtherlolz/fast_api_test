@@ -28,7 +28,7 @@ async def create_user(user: CreateUser):
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
     user_info = {
         "sub": user.email,
-        "user_id": user.id
+        "user_id": user_obj.id
     }
     access_token = create_access_token(
         data=user_info, expires_delta=access_token_expires
