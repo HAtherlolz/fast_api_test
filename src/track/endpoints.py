@@ -20,7 +20,6 @@ async def create(
         track_author: str = None,
         text: str = None,
         is_hidden: bool = None,
-        owner_id: int = None,
         genre: list[int] = None,
         user: User_Pydantic = Depends(get_current_active_user)
 ):
@@ -28,10 +27,10 @@ async def create(
     if song.filename[-3:] == 'mp3':
         return HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Invalid track extension. Try to upload .mp3")
-    track_path = 'track/' + f'user_{owner_id}/' + song.filename
+    track_path = 'track/' + f'user_{user.id}/' + song.filename
     track_s3_path = await upload_track_to_s3(song, track_path)
     track = await Track.create(
-        name=name, track_author=track_author, owner_id=owner_id, text=text, is_hidden=is_hidden, song=track_s3_path)
+        name=name, track_author=track_author, owner_id=user.id, text=text, is_hidden=is_hidden, song=track_s3_path)
     genre = await Genre.filter(id__in=genre)
     await track.genre.add(*genre)
     return await Track_Pydantic.from_tortoise_orm(track)
