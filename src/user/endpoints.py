@@ -7,11 +7,11 @@ from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserI
 from .jwt_auth import (
     get_password_hash,
     authenticate_user,
-    create_access_token,
     get_current_active_user,
-    get_current_user
+    get_current_user,
+    get_jwt
 )
-from .services import upload_file_to_s3, delete_file_to_s3, send_test_email, get_jwt
+from .services import upload_file_to_s3, delete_file_to_s3, send_test_email
 
 
 settings = Settings()

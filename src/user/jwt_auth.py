@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from .models import User
-from .serializers import TokenData, UserSerializer
+from .serializers import TokenData, UserSerializer, User_Pydantic
 from config.config import Settings
 
 settings = Settings()
@@ -77,3 +77,14 @@ async def get_current_active_user(current_user: UserSerializer = Depends(get_cur
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+
+async def get_jwt(user: User_Pydantic) -> str:
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
+    user_info = {
+        "sub": user.email,
+        "user_id": user.id
+    }
+    access_token = create_access_token(
+        data=user_info, expires_delta=access_token_expires
+    )
+    return access_token

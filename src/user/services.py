@@ -6,8 +6,6 @@ from fastapi import UploadFile
 from pathlib import Path
 
 from config.config import Settings
-from .serializers import User_Pydantic
-from .jwt_auth import create_access_token
 from ..utils.email import send_email
 
 settings = Settings()
@@ -47,14 +45,3 @@ async def delete_file_to_s3(image_path: str) -> None:
     )
     s3.Object(settings.AWS_BUKCET_NAME, image_path[36:]).delete()
 
-
-async def get_jwt(user: User_Pydantic) -> str:
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
-    user_info = {
-        "sub": user.email,
-        "user_id": user.id
-    }
-    access_token = create_access_token(
-        data=user_info, expires_delta=access_token_expires
-    )
-    return access_token
