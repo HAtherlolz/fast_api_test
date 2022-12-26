@@ -4,6 +4,8 @@ from tortoise.models import Model
 from src.user.models import User
 from src.genre.models import Genre
 
+from .services import delete_file_to_s3
+
 
 class Track(Model):
     id = fields.IntField(pk=True)
@@ -19,6 +21,9 @@ class Track(Model):
     date_created = fields.DatetimeField(auto_now_add=True)
     is_hidden = fields.BooleanField(default=False)
     song = fields.CharField(100)
+
+    async def delete(self):
+        await delete_file_to_s3(self.song)
 
     def __str__(self):
         return self.name
