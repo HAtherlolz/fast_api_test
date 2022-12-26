@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 
 from config.config import Settings
 from .models import User
-from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserIn_Pydantic, EmailActivationToken
+from .serializers import User_Pydantic, Token, CreateUser, UserSerializer, UserUpdate, EmailActivationToken, UserOut
 from .jwt_auth import (
     get_password_hash,
     authenticate_user,
@@ -30,16 +30,16 @@ async def create_user(user: CreateUser):
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
 
-@router_user.get("/users/")
+@router_user.get("/users/", response_model=list[UserOut])
 async def get_list_of_users():
     """ Returns a list of all users """
-    return await User_Pydantic.from_queryset(User.all())
+    return await User.all()
 
 
-@router_user.get('/users/{user_id}')
+@router_user.get('/users/{user_id}', response_model=UserOut)
 async def get_target_user(user_id: int):
     """ Get user id and return target user's data """
-    return await User_Pydantic.from_queryset_single(User.get(id=user_id))
+    return await User.get(id=user_id)
 
 
 @router_user.get("/users/me/", response_model=User_Pydantic)
@@ -49,7 +49,7 @@ async def users_me(current_user: UserSerializer = Depends(get_current_active_use
 
 
 @router_user.put('/user/update/', response_model=User_Pydantic)
-async def update_user(user_data: UserSerializer, user: UserSerializer = Depends(get_current_active_user)):
+async def update_user(user_data: UserUpdate, user: UserSerializer = Depends(get_current_active_user)):
     """ Update user's data """
     await User.filter(id=user.id).update(**user_data.dict(exclude_unset=True))
     return await User_Pydantic.from_queryset_single(User.get(id=user.id))

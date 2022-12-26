@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from typing import Union
 from pydantic import BaseModel, EmailStr
 from tortoise.contrib.pydantic import pydantic_model_creator
@@ -22,6 +24,20 @@ class UserSerializer(BaseModel):
     first_name: Union[str, None]
     last_name: Union[str, None]
     # is_active: Union[str, None]
+
+
+class UserOut(BaseModel):
+    id: int
+    email: Union[str, None]
+    first_name: Union[str, None]
+    last_name: Union[str, None]
+    avatar: str | None
+    date_created: datetime
+
+
+class UserUpdate(BaseModel):
+    first_name: Union[str, None]
+    last_name: Union[str, None]
 
 
 class UserImage(BaseModel):
