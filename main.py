@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.config import Settings
 from config.database import setup_database
 from src.user.endpoints import router_user
+from src.genre.endpoints import genre_router
 
 settings = Settings()
 
@@ -24,4 +25,5 @@ app.add_middleware(
 
 
 app.include_router(router_user, prefix='/api/v1', tags=["user"])
+app.include_router(genre_router, prefix='/api/v1', tags=["genre"])
 
