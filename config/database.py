@@ -23,6 +23,8 @@ def setup_database(app: FastAPI):
         modules={
             'models': [
                 'src.user.models',
+                "src.genre.models",
+                "src.track.models",
                 "aerich.models"
             ],
         },
@@ -40,11 +42,16 @@ TORTOISE_ORM = {
         )},
     "apps": {
         "models": {
-            "models": ["src.user.models", "aerich.models"],
+            "models": [
+                "src.user.models",
+                "src.genre.models",
+                "src.track.models",
+                "aerich.models"
+            ],
             "default_connection": "default",
         },
     },
 }
 
 
-Tortoise.init_models(["src.user.models"], "models")
+Tortoise.init_models(["src.user.models", "src.genre.models", "src.track.models"], "models")

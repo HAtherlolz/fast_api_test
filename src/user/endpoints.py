@@ -1,4 +1,3 @@
-from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 
 from config.config import Settings
