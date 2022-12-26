@@ -14,6 +14,9 @@ class User(Model):
     date_created = fields.DatetimeField(auto_now_add=True)
     is_active = fields.BooleanField(default=False)
 
+    class PydanticMeta:
+        exclude = ('password', )
+
     async def delete(self):
         if self.avatar != settings.AWS_BUCKET_DEFAULT_AVATAR_PATH:
             await delete_file_to_s3(self.avatar)
