@@ -6,7 +6,7 @@ from tortoise.contrib.pydantic import pydantic_model_creator
 
 from .models import User
 
-User_Pydantic = pydantic_model_creator(User, name='User', exclude=('password',))
+User_Pydantic = pydantic_model_creator(User, name='User', exclude=('password', 'track'))
 UserIn_Pydantic = pydantic_model_creator(User, name='UserIn', exclude_readonly=True)
 
 
@@ -31,7 +31,7 @@ class UserOut(BaseModel):
     email: Union[str, None]
     first_name: Union[str, None]
     last_name: Union[str, None]
-    avatar: str | None
+    avatar: Union[str, None]
     date_created: datetime
 
 

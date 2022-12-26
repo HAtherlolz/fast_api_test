@@ -44,6 +44,7 @@ async def get_target_user(user_id: int):
 @router_user.get("/users/me/", response_model=User_Pydantic)
 async def users_me(current_user: UserSerializer = Depends(get_current_active_user)):
     """ get jwt token in header and return current user's data """
+
     return current_user
 
 
