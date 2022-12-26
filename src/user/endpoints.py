@@ -11,7 +11,7 @@ from .jwt_auth import (
     get_current_active_user,
     get_current_user
 )
-from .services import upload_file_to_s3, delete_file_to_s3, send_test_email
+from .services import upload_file_to_s3, delete_file_to_s3, send_test_email, get_jwt
 
 
 settings = Settings()
@@ -25,14 +25,7 @@ async def create_user(user: CreateUser):
     user_obj = await User.create(
         email=user.email, password=hashed_password, is_active=False, avatar=settings.AWS_BUCKET_DEFAULT_AVATAR_PATH
     )
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
-    user_info = {
-        "sub": user.email,
-        "user_id": user_obj.id
-    }
-    access_token = create_access_token(
-        data=user_info, expires_delta=access_token_expires
-    )
+    access_token = await get_jwt(user_obj)
     send_test_email(user_obj.email, access_token)
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
@@ -95,15 +88,7 @@ async def email_ativation(token: EmailActivationToken):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The user is already activated")
     user.is_active = True
     await user.save(update_fields=['is_active'])
-    user_info = {
-        "sub": user.email,
-        "user_id": user.id
-    }
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-
-        data=user_info, expires_delta=access_token_expires
-    )
+    access_token = await get_jwt(user)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -122,12 +107,5 @@ async def login_for_access_token(user: CreateUser):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User is not active",
         )
-    user_info = {
-        "sub": user.email,
-        "user_id": user.id
-    }
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 24 * 7)
-    access_token = create_access_token(
-        data=user_info, expires_delta=access_token_expires
-    )
+    access_token = await get_jwt(user)
     return {"access_token": access_token, "token_type": "bearer"}
