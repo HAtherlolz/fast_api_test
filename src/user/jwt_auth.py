@@ -22,6 +22,20 @@ def verify_password(plain_password, hashed_password):
 
 
 def get_password_hash(password):
+    upper_ch = False
+    if len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail='The password must contains at least 8 charset'
+        )
+    for ch in password:
+        if ch.isupper():
+            upper_ch = True
+    if not upper_ch:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail='The password must contains at least 1 uppercase charset'
+        )
     return pwd_context.hash(password)
 
 
