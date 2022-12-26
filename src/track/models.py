@@ -24,6 +24,7 @@ class Track(Model):
 
     async def delete(self):
         await delete_file_to_s3(self.song)
+        super.delete()
 
     def __str__(self):
         return self.name
