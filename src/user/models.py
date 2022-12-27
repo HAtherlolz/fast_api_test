@@ -15,7 +15,7 @@ class User(Model):
     is_active = fields.BooleanField(default=False)
 
     class PydanticMeta:
-        exclude = ('password', )
+        exclude = ('password', 'track', 'is_active')
 
     async def delete(self):
         if self.avatar != settings.AWS_BUCKET_DEFAULT_AVATAR_PATH:

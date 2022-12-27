@@ -73,7 +73,7 @@ async def owners_track_update(
 async def owners_track_list(track_id: int, current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's track list """
     track = await Track.filter(id=track_id).first()
-    if track.owner.id != current_user.id:
+    if track.owner_id != current_user.id:
         return HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Only track's author can delete the instance")
     if track.exists():
