@@ -3,6 +3,7 @@ from tortoise.models import Model
 
 from src.user.models import User
 from src.genre.models import Genre
+from src.album.models import Album
 
 from .services import delete_file_to_s3
 
@@ -17,10 +18,17 @@ class Track(Model):
     genre: fields.ManyToManyRelation['Genre'] = fields.ManyToManyField(
         'models.Genre', through='track_genre', null=True, related_name='tracks'
     )
+    album: fields.ForeignKeyRelation['Album'] = fields.ForeignKeyField(
+        'models.Album', related_name='track', on_delete=fields.CASCADE, null=True,
+    )
     text = fields.TextField()
     date_created = fields.DatetimeField(auto_now_add=True)
     is_hidden = fields.BooleanField(default=False)
     song = fields.CharField(100)
+
+    class PydanticMeta:
+        backward_relations = False
+        # exclude = ('owner',)
 
     async def delete(self):
         await delete_file_to_s3(self.song)
