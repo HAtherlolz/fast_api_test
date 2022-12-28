@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 
 from src.user.jwt_auth import get_current_active_user, User_Pydantic
-from .schemas import Album, Album_Pydantic, AlbumUpdate
+from .schemas import Album, Album_Pydantic, AlbumUpdate, List_Album, AlbumRetrieve
 
 from src.track.services import upload_track_to_s3
 
@@ -31,25 +31,26 @@ async def create(
     return await Album_Pydantic.from_tortoise_orm(album)
 
 
-@album_router.get("/albums/", response_model=list[Album_Pydantic])
+@album_router.get("/albums/", response_model=list[List_Album])
 async def list():
     """ Return the list of albums """
     return await Album.filter(is_hidden=False).prefetch_related("owner")
 
 
-@album_router.get("/album/{album_id}", response_model=Album_Pydantic)
+@album_router.get("/album/{album_id}", response_model=AlbumRetrieve)
 async def retrieve(album_id: int):
     """ Return the target album """
-    return await Album.get(id=album_id).prefetch_related('owner')
+    # print(await Album.get(id=album_id).prefetch_related('owner', 'track'))
+    return await Album_Pydantic.from_tortoise_orm(await Album.get(id=album_id).prefetch_related('owner', 'track'))
 
 
-@album_router.get("/users/albums/", response_model=Album_Pydantic)
+@album_router.get("/users/albums/", response_model=AlbumRetrieve)
 async def owners_album_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's albums list """
     return await Album.filter(owner=current_user.id).prefetch_related('owner')
 
 
-@album_router.put("/users/album/{album_id}")
+@album_router.put("/users/album/{album_id}", response_model=AlbumRetrieve)
 async def update_album(
         album_id: int,
         album_data: AlbumUpdate,

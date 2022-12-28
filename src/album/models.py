@@ -2,6 +2,7 @@ from tortoise import fields
 from tortoise.models import Model
 
 from src.user.models import User
+# from src.track.models import Track
 
 
 class Album(Model):
@@ -14,6 +15,10 @@ class Album(Model):
     )
     is_hidden = fields.BooleanField(default=False)
     date_created = fields.DatetimeField(auto_now_add=True)
+
+    class PydanticMeta:
+        # exclude = ("owner",)
+        pass
 
     def __str__(self):
         return self.name

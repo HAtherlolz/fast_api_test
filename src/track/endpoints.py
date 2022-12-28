@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 
-from .schema import Track, Track_Pydantic, TrackUpdate
+from .schema import Track, Track_Pydantic, TrackUpdate, TrackOut
 from src.user.serializers import User_Pydantic
 from src.user.jwt_auth import get_current_active_user
 from src.genre.models import Genre
@@ -20,41 +20,47 @@ async def create(
         track_author: str = None,
         text: str = None,
         is_hidden: bool = None,
+        album_id: int = None,
         genre: list[int] = None,
         user: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create a track """
-    if song.filename[-3:] == 'mp3':
+    if not song.filename.split('.')[1] == 'mp3':
         return HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Invalid track extension. Try to upload .mp3")
     track_path = 'track/' + f'user_{user.id}/' + song.filename
     track_s3_path = await upload_track_to_s3(song, track_path)
     track = await Track.create(
-        name=name, track_author=track_author, owner_id=user.id, text=text, is_hidden=is_hidden, song=track_s3_path)
+        name=name, track_author=track_author, owner_id=user.id,
+        text=text, is_hidden=is_hidden, song=track_s3_path, album_id=album_id
+    )
     genre = await Genre.filter(id__in=genre)
     await track.genre.add(*genre)
     return await Track_Pydantic.from_tortoise_orm(track)
 
 
-@track_router.get("/tracks/", response_model=list[Track_Pydantic])
+@track_router.get("/tracks/", response_model=list[TrackOut])
 async def list():
     """ Return the list of all tracks """
-    return await Track.filter(is_hidden=False).prefetch_related('genre', 'owner')
+    return await Track_Pydantic.from_queryset(Track.filter(is_hidden=False).prefetch_related('genre', 'owner', 'album'))
 
 
-@track_router.get("/tracks/{track_id}", response_model=Track_Pydantic)
+@track_router.get("/tracks/{track_id}", response_model=TrackOut)
 async def retrieve(track_id: int):
     """ Return the target track """
-    return await Track.get(id=track_id).prefetch_related('genre', 'owner')
+    print(TrackOut.schema())
+    return await Track_Pydantic.from_queryset_single(Track.get(id=track_id).prefetch_related('genre', 'owner', 'album'))
 
 
-@track_router.get("/users/tracks/", response_model=Track_Pydantic)
+@track_router.get("/users/tracks/", response_model=TrackOut)
 async def owners_track_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's track list """
-    return await Track.filter(owner=current_user.id).prefetch_related('genre', 'owner')
+    return await Track_Pydantic.from_queryset(
+        Track.filter(owner=current_user.id).prefetch_related('genre', 'owner', 'album')
+    )
 
 
-@track_router.put("/users/track/{track_id}", response_model=Track_Pydantic)
+@track_router.put("/users/track/{track_id}", response_model=TrackOut)
 async def owners_track_update(
         track_id: int, track: TrackUpdate,
         genre: List[int], current_user: User_Pydantic = Depends(get_current_active_user)):
