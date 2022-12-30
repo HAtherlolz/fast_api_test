@@ -68,3 +68,12 @@ class TrackOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TrackCreateForm(BaseModel):
+    name: str
+    track_author: str
+    text: str | None
+    is_hidden: bool
+    album: int | None
+    genre: list[int]

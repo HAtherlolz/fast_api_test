@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Form
 
 from src.user.jwt_auth import get_current_active_user, User_Pydantic
 from .schemas import Album, Album_Pydantic, AlbumUpdate, List_Album, AlbumRetrieve

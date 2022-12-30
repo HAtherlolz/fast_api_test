@@ -1,8 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Form
 
-from .schema import Track, Track_Pydantic, TrackUpdate, TrackOut
+from .schema import Track, Track_Pydantic, TrackUpdate, TrackOut, TrackCreateForm
 from src.user.serializers import User_Pydantic
 from src.user.jwt_auth import get_current_active_user
 from src.genre.models import Genre
@@ -13,15 +13,15 @@ from .services import upload_track_to_s3
 track_router = APIRouter()
 
 
-@track_router.post("/tracks/")
+@track_router.post("/tracks/", response_model=TrackOut)
 async def create(
         song: UploadFile = File(...),
-        name: str = None,
-        track_author: str = None,
-        text: str = None,
-        is_hidden: bool = None,
-        album_id: int = None,
-        genre: list[int] = None,
+        name: str = Form(...),
+        track_author: str = Form(...),
+        text: str = Form(...),
+        is_hidden: bool = Form(...),
+        album_id: int = Form(default=None),
+        genre: list[int] = Form(...),
         user: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create a track """
