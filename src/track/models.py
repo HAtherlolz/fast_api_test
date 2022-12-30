@@ -32,6 +32,7 @@ class Track(Model):
         # exclude = ('owner',)
 
     async def delete(self):
+        await delete_file_to_s3(self.song_poster)
         await delete_file_to_s3(self.song)
         super.delete()
 
