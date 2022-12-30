@@ -11,9 +11,9 @@ album_router = APIRouter()
 @album_router.post("/albums/")
 async def create(
         poster: UploadFile = File(...),
-        name: str = None,
-        description: str = None,
-        is_hidden: bool = None,
+        name: str = File(...),
+        description: str = File(...),
+        is_hidden: bool = File(...),
         user: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create an album """
