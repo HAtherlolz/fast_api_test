@@ -24,10 +24,11 @@ class Track(Model):
     text = fields.TextField()
     date_created = fields.DatetimeField(auto_now_add=True)
     is_hidden = fields.BooleanField(default=False)
-    song = fields.CharField(100)
+    song = fields.CharField(300)
+    song_poster = fields.CharField(300, null=True)
 
-    class PydanticMeta:
-        backward_relations = False
+    # class PydanticMeta:
+    #     backward_relations = False
         # exclude = ('owner',)
 
     async def delete(self):

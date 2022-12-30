@@ -65,15 +65,16 @@ class TrackOut(BaseModel):
     date_created: datetime
     is_hidden: bool
     song: str
+    song_poster: str
 
     class Config:
         orm_mode = True
 
-
-class TrackCreateForm(BaseModel):
-    name: str
-    track_author: str
-    text: str | None
-    is_hidden: bool
-    album: int | None
-    genre: list[int]
+#
+# class TrackCreateForm(BaseModel):
+#     name: str
+#     track_author: str
+#     text: str | None
+#     is_hidden: bool
+#     album: int | None
+#     genre: list[int]
