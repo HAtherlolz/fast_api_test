@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Form
 
 from src.user.jwt_auth import get_current_active_user, User_Pydantic
@@ -44,7 +46,7 @@ async def retrieve(album_id: int):
     return await Album_Pydantic.from_tortoise_orm(await Album.get(id=album_id).prefetch_related('owner', 'track'))
 
 
-@album_router.get("/users/albums/", response_model=AlbumRetrieve)
+@album_router.get("/users/albums/", response_model=List[AlbumRetrieve])
 async def owners_album_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's albums list """
     return await Album.filter(owner=current_user.id).prefetch_related('owner')

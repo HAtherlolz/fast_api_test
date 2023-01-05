@@ -53,7 +53,7 @@ async def retrieve(track_id: int):
     return await Track_Pydantic.from_queryset_single(Track.get(id=track_id).prefetch_related('genre', 'owner', 'album'))
 
 
-@track_router.get("/users/tracks/", response_model=TrackOut)
+@track_router.get("/users/tracks/", response_model=List[TrackOut])
 async def owners_track_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's track list """
     return await Track_Pydantic.from_queryset(
