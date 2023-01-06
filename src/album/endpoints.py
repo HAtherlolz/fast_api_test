@@ -6,6 +6,7 @@ from src.user.jwt_auth import get_current_active_user, User_Pydantic
 from .schemas import Album, Album_Pydantic, AlbumUpdate, List_Album, AlbumRetrieve
 
 from src.track.services import upload_track_to_s3
+from src.genre.models import Genre
 
 album_router = APIRouter()
 
@@ -16,6 +17,7 @@ async def create(
         name: str = File(...),
         description: str = File(...),
         is_hidden: bool = File(...),
+        genre: list[int] = Form(...),
         user: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create an album """
@@ -30,6 +32,8 @@ async def create(
     poster_s3_path = await upload_track_to_s3(poster, album_poster_path)
     album = await Album.create(
         name=name, description=description, owner_id=user.id, is_hidden=is_hidden, poster=poster_s3_path)
+    genre = await Genre.filter(id__in=genre)
+    await album.genre.add(*genre)
     return await Album_Pydantic.from_tortoise_orm(album)
 
 

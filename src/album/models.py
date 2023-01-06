@@ -2,6 +2,7 @@ from tortoise import fields
 from tortoise.models import Model
 
 from src.user.models import User
+from src.genre.models import Genre
 # from src.track.models import Track
 
 
@@ -12,6 +13,9 @@ class Album(Model):
     poster = fields.CharField(300)
     owner: fields.ForeignKeyRelation['User'] = fields.ForeignKeyField(
         'models.User', related_name='album', on_delete=fields.CASCADE
+    )
+    genre: fields.ManyToManyRelation['Genre'] = fields.ManyToManyField(
+        'models.Genre', through='album_genre', null=True, related_name='albums'
     )
     is_hidden = fields.BooleanField(default=False)
     views_count = fields.IntField(default=0)

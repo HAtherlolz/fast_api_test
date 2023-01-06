@@ -31,6 +31,14 @@ class AlbumOwner(BaseModel):
         orm_mode = True
 
 
+class Genre(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class TrackOut(BaseModel):
     id: int
     name: str
@@ -50,6 +58,7 @@ class AlbumRetrieve(BaseModel):
     is_hidden: bool
     date_created: datetime
     track: List[TrackOut]
+    genre: List[Genre]
 
     class Config:
         orm_mode = True
