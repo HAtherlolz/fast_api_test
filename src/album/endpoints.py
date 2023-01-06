@@ -36,20 +36,22 @@ async def create(
 @album_router.get("/albums/", response_model=list[List_Album])
 async def list():
     """ Return the list of albums """
-    return await Album.filter(is_hidden=False).prefetch_related("owner")
+    return await Album.filter(is_hidden=False).prefetch_related("owner").order_by('-views_count')
 
 
 @album_router.get("/album/{album_id}", response_model=AlbumRetrieve)
 async def retrieve(album_id: int):
     """ Return the target album """
-    # print(await Album.get(id=album_id).prefetch_related('owner', 'track'))
+    album_obj = await Album.get(id=album_id)
+    album_obj.views_count += 1
+    await album_obj.save()
     return await Album_Pydantic.from_tortoise_orm(await Album.get(id=album_id).prefetch_related('owner', 'track'))
 
 
 @album_router.get("/users/albums/", response_model=List[List_Album])
 async def owners_album_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's albums list """
-    return await Album.filter(owner=current_user.id).prefetch_related('owner')
+    return await Album.filter(owner=current_user.id).prefetch_related('owner').order_by('-views_count')
 
 
 @album_router.put("/users/album/{album_id}", response_model=AlbumRetrieve)

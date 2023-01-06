@@ -14,6 +14,7 @@ class Album(Model):
         'models.User', related_name='album', on_delete=fields.CASCADE
     )
     is_hidden = fields.BooleanField(default=False)
+    views_count = fields.IntField(default=0)
     date_created = fields.DatetimeField(auto_now_add=True)
 
     class PydanticMeta:

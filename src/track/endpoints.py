@@ -43,13 +43,17 @@ async def create(
 @track_router.get("/tracks/", response_model=list[TrackOut])
 async def list():
     """ Return the list of all tracks """
-    return await Track_Pydantic.from_queryset(Track.filter(is_hidden=False).prefetch_related('genre', 'owner', 'album'))
+    return await Track_Pydantic.from_queryset(
+        Track.filter(is_hidden=False).prefetch_related('genre', 'owner', 'album').order_by('-views_count')
+    )
 
 
 @track_router.get("/tracks/{track_id}", response_model=TrackOut)
 async def retrieve(track_id: int):
     """ Return the target track """
-    print(TrackOut.schema())
+    track_obj = await Track.get(id=track_id)
+    track_obj.views_count += 1
+    await track_obj.save()
     return await Track_Pydantic.from_queryset_single(Track.get(id=track_id).prefetch_related('genre', 'owner', 'album'))
 
 
@@ -57,7 +61,7 @@ async def retrieve(track_id: int):
 async def owners_track_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's track list """
     return await Track_Pydantic.from_queryset(
-        Track.filter(owner=current_user.id).prefetch_related('genre', 'owner', 'album')
+        Track.filter(owner=current_user.id).prefetch_related('genre', 'owner', 'album').order_by('-views_count')
     )
 
 
@@ -77,7 +81,7 @@ async def owners_track_update(
 
 
 @track_router.delete("/users/track/{track_id}", status_code=204)
-async def owners_track_list(track_id: int, current_user: User_Pydantic = Depends(get_current_active_user)):
+async def destroy(track_id: int, current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's track list """
     track = await Track.filter(id=track_id).first()
     if track.owner_id != current_user.id:

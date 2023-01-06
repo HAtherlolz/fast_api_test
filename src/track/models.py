@@ -26,10 +26,10 @@ class Track(Model):
     is_hidden = fields.BooleanField(default=False)
     song = fields.CharField(300)
     song_poster = fields.CharField(300, null=True)
+    views_count = fields.IntField(default=0)
 
-    # class PydanticMeta:
-    #     backward_relations = False
-        # exclude = ('owner',)
+    class PydanticMeta:
+        exclude = ('views_count',)
 
     async def delete(self):
         await delete_file_to_s3(self.song_poster)
