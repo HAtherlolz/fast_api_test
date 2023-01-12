@@ -6,16 +6,20 @@ from src.user.jwt_auth import get_current_active_user, User_Pydantic
 from .schemas import Album, Album_Pydantic, AlbumUpdate, List_Album, AlbumRetrieve
 
 from src.track.services import upload_track_to_s3
+from src.genre.models import Genre
 
 album_router = APIRouter()
 
 
-@album_router.post("/albums/")
+@album_router.post("/albums/", description="release_year - example: 10.03.1999")
 async def create(
         poster: UploadFile = File(...),
         name: str = File(...),
+        band: str = File(...),
+        release_year: str = File(...),
         description: str = File(...),
         is_hidden: bool = File(...),
+        genre: list[int] = Form(...),
         user: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create an album """
@@ -29,11 +33,16 @@ async def create(
     album_poster_path = 'poster/' + f'{name}/' + poster.filename
     poster_s3_path = await upload_track_to_s3(poster, album_poster_path)
     album = await Album.create(
-        name=name, description=description, owner_id=user.id, is_hidden=is_hidden, poster=poster_s3_path)
+        name=name, description=description, owner_id=user.id,
+        is_hidden=is_hidden, poster=poster_s3_path, band=band,
+        release_year=release_year
+    )
+    genre = await Genre.filter(id__in=genre)
+    await album.genre.add(*genre)
     return await Album_Pydantic.from_tortoise_orm(album)
 
 
-@album_router.get("/albums/", response_model=list[List_Album])
+@album_router.get("/albums/", response_model=list[AlbumRetrieve])
 async def list():
     """ Return the list of albums """
     return await Album.filter(is_hidden=False).prefetch_related("owner").order_by('-views_count')
