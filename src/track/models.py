@@ -22,6 +22,7 @@ class Track(Model):
         'models.Album', related_name='track', on_delete=fields.CASCADE, null=True,
     )
     text = fields.TextField()
+    songs_time = fields.CharField(max_length=5, null=True)
     date_created = fields.DatetimeField(auto_now_add=True)
     is_hidden = fields.BooleanField(default=False)
     song = fields.CharField(300)

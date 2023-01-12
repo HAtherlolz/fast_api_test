@@ -1,4 +1,7 @@
+import datetime
+
 from typing import List
+from mutagen.mp3 import MP3
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Form
 
@@ -13,7 +16,7 @@ from .services import track_poster_create
 track_router = APIRouter()
 
 
-@track_router.post("/tracks/", response_model=TrackOut)
+@track_router.post("/tracks/")
 async def create(
         song: UploadFile = File(...),
         song_poster: UploadFile = File(...),
@@ -29,11 +32,13 @@ async def create(
     if not song.filename.split('.')[1] == 'mp3':
         return HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Invalid track extension. Try to upload .mp3")
+    mp3 = MP3(song.file)
+    songs_time = str(datetime.timedelta(seconds=mp3.info.length))[3:7]
     track_s3_path, tracks_poster_s3_path = await track_poster_create(user.id, song, song_poster)
     track = await Track.create(
         name=name, track_author=track_author, owner_id=user.id,
-        text=text, is_hidden=is_hidden, song=track_s3_path,
-        song_poster=tracks_poster_s3_path, album_id=album_id
+        text=text, is_hidden=is_hidden, song=track_s3_path, album_id=album_id,
+        song_poster=tracks_poster_s3_path, songs_time=songs_time
     )
     genre = await Genre.filter(id__in=genre)
     await track.genre.add(*genre)

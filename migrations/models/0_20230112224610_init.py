@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS "track" (
     "name" VARCHAR(30) NOT NULL UNIQUE,
     "track_author" VARCHAR(50) NOT NULL,
     "text" TEXT NOT NULL,
+    "songs_time" VARCHAR(5),
     "date_created" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "is_hidden" BOOL NOT NULL  DEFAULT False,
     "song" VARCHAR(300) NOT NULL,

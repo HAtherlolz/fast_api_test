@@ -68,6 +68,7 @@ class TrackOut(BaseModel):
     is_hidden: bool
     song: str
     song_poster: str
+    songs_time: str
 
     class Config:
         orm_mode = True

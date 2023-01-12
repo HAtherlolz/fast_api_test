@@ -46,6 +46,7 @@ class TrackOut(BaseModel):
     genre: List[Genre] = []
     song: str
     song_poster: str
+    songs_time: str
 
     class Config:
         orm_mode = True
