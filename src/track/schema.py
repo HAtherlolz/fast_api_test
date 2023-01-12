@@ -47,6 +47,8 @@ class Album(BaseModel):
     name: str
     description: str
     poster: str
+    band: str
+    release_year: str
     is_hidden: bool
     date_created: datetime
 

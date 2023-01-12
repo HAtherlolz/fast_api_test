@@ -9,8 +9,10 @@ from src.genre.models import Genre
 class Album(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(25, index=True)
-    description = fields.CharField(500)
-    poster = fields.CharField(300)
+    description = fields.CharField(max_length=1000)
+    poster = fields.CharField(max_length=1000)
+    band = fields.CharField(max_length=30)
+    release_year = fields.CharField(max_length=10)
     owner: fields.ForeignKeyRelation['User'] = fields.ForeignKeyField(
         'models.User', related_name='album', on_delete=fields.CASCADE
     )

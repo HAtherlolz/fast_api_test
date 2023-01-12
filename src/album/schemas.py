@@ -44,6 +44,8 @@ class TrackOut(BaseModel):
     name: str
     track_author: str
     genre: List[Genre] = []
+    song: str
+    song_poster: str
 
     class Config:
         orm_mode = True
@@ -54,6 +56,8 @@ class AlbumRetrieve(BaseModel):
     name: str
     description: str
     poster: str
+    band: str
+    release_year: str
     owner: AlbumOwner
     is_hidden: bool
     date_created: datetime
