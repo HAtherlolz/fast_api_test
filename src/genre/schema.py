@@ -3,7 +3,7 @@ from tortoise.contrib.pydantic import pydantic_model_creator
 
 from .models import Genre
 
-Genre_Pydantic = pydantic_model_creator(Genre, name='Genre', exclude=('password', 'tracks'))
+Genre_Pydantic = pydantic_model_creator(Genre, name='Genre', exclude=('password', 'tracks', 'album'))
 GenreIn_Pydantic = pydantic_model_creator(Genre, name='GenreIn', exclude_readonly=True)
 
 

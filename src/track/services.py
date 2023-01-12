@@ -28,9 +28,7 @@ async def delete_file_to_s3(song_path: str) -> None:
 
 async def track_poster_create(user_id: int, song: UploadFile, song_poster: UploadFile) -> tuple[str, str]:
     track_path = 'track/' + f'user_{user_id}/' + song.filename
-    print(song.filename)
     track_s3_path = await upload_track_to_s3(song, track_path)
-    print(song_poster.filename)
     track_poster_path = 'tracks_posters/' + f'user_{user_id}/' + song_poster.filename
     tracks_poster_s3_path = await upload_track_to_s3(song_poster, track_poster_path)
     return track_s3_path, tracks_poster_s3_path

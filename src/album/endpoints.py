@@ -57,10 +57,13 @@ async def retrieve(album_id: int):
     return await Album_Pydantic.from_tortoise_orm(await Album.get(id=album_id).prefetch_related('owner', 'track'))
 
 
-@album_router.get("/users/albums/", response_model=List[List_Album])
+@album_router.get("/users/albums/", response_model=List[AlbumRetrieve])
 async def owners_album_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's albums list """
-    return await Album.filter(owner=current_user.id).prefetch_related('owner').order_by('-views_count')
+    return await Album_Pydantic.from_queryset(
+        Album.filter(owner=current_user.id).prefetch_related('owner').order_by('-views_count')
+    )
+
 
 
 @album_router.put("/users/album/{album_id}", response_model=AlbumRetrieve)

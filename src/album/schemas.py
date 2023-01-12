@@ -9,7 +9,7 @@ from src.track.schema import Track_Pydantic, Genre
 from .models import Album
 
 
-List_Album = pydantic_model_creator(Album, name="AlbumList", exclude=('track',))
+List_Album = pydantic_model_creator(Album, name="AlbumList", exclude=('track', 'genre'))
 Album_Pydantic = pydantic_model_creator(Album, name='Album')
 # AlbumUpdate = pydantic_model_creator(Album, name='AlbumUpdate', exclude=("owner", ))
 AlbumIn_Pydantic = pydantic_model_creator(Album, name='AlbumIn', exclude_readonly=True, exclude=('song',))
