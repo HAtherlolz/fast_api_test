@@ -45,7 +45,9 @@ async def create(
 @album_router.get("/albums/", response_model=list[AlbumRetrieve])
 async def list():
     """ Return the list of albums """
-    return await Album.filter(is_hidden=False).prefetch_related("owner").order_by('-views_count')
+    return await Album_Pydantic.from_queryset(
+        Album.filter(is_hidden=False).prefetch_related("owner").order_by('-views_count')
+    )
 
 
 @album_router.get("/album/{album_id}", response_model=AlbumRetrieve)
