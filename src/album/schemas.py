@@ -42,6 +42,7 @@ class Genre(BaseModel):
 class TrackOut(BaseModel):
     id: int
     name: str
+    text: str
     track_author: str
     genre: List[Genre] = []
     song: str
