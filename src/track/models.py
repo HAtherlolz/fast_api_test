@@ -10,8 +10,8 @@ from .services import delete_file_to_s3
 
 class Track(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(30, unique=True, index=True)
-    track_author = fields.CharField(50)
+    name = fields.CharField(max_length=255, index=True)
+    track_author = fields.CharField(max_length=255)
     owner: fields.ForeignKeyRelation['User'] = fields.ForeignKeyField(
         'models.User', related_name='track', on_delete=fields.CASCADE
     )
@@ -24,8 +24,8 @@ class Track(Model):
     text = fields.TextField()
     date_created = fields.DatetimeField(auto_now_add=True)
     is_hidden = fields.BooleanField(default=False)
-    song = fields.CharField(300)
-    song_poster = fields.CharField(300, null=True)
+    song = fields.CharField(max_length=1000)
+    song_poster = fields.CharField(max_length=1000, null=True)
     views_count = fields.IntField(default=0)
 
     class PydanticMeta:

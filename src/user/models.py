@@ -6,11 +6,11 @@ from .services import delete_file_to_s3, settings
 
 class User(Model):
     id = fields.IntField(pk=True)
-    first_name = fields.CharField(25, blank=True, null=True)
-    last_name = fields.CharField(25, blank=True, null=True)
-    email = fields.CharField(50, unique=True)
-    password = fields.CharField(100)
-    avatar = fields.CharField(1000, blank=True, null=True)
+    first_name = fields.CharField(max_length=225, blank=True, null=True)
+    last_name = fields.CharField(max_length=225, blank=True, null=True)
+    email = fields.CharField(max_length=50, unique=True)
+    password = fields.CharField(max_length=100)
+    avatar = fields.CharField(max_length=1000, blank=True, null=True)
     date_created = fields.DatetimeField(auto_now_add=True)
     is_active = fields.BooleanField(default=False)
 
