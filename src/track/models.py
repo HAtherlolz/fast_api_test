@@ -10,7 +10,7 @@ from .services import delete_file_to_s3
 
 class Track(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, index=True)
+    name = fields.CharField(max_length=255, index=True, unique=False)
     track_author = fields.CharField(max_length=255)
     owner: fields.ForeignKeyRelation['User'] = fields.ForeignKeyField(
         'models.User', related_name='track', on_delete=fields.CASCADE
