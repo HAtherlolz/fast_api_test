@@ -4,6 +4,8 @@ from tortoise.models import Model
 from src.user.models import User
 from src.track.models import Track
 
+from .services import delete_file_to_s3
+
 
 class PlayList(Model):
     """ Model for playlists """
@@ -18,3 +20,10 @@ class PlayList(Model):
     track: fields.ManyToManyRelation['Track'] = fields.ManyToManyField(
         'models.Track', through='playlist_track', null=True, related_name='playlists'
     )
+
+    async def delete(self):
+        await delete_file_to_s3(self.poster)
+        super.delete()
+
+    def __str__(self):
+        return self.name
