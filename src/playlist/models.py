@@ -23,7 +23,7 @@ class PlayList(Model):
 
     async def delete(self):
         await delete_file_to_s3(self.poster)
-        super.delete()
+        await super().delete()
 
     def __str__(self):
         return self.name

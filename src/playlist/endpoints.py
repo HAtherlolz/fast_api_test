@@ -116,4 +116,5 @@ async def destroy_playlist(playlist_id: int, current_user: User_Pydantic = Depen
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The playlist with this id does not exist")
     if playlist_obj.owner_id == current_user.id:
         await playlist_obj.delete()
-    return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the playlist owner can delete the instance")
+    else:
+        return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the playlist owner can delete the instance")
