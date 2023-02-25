@@ -26,6 +26,7 @@ def setup_database(app: FastAPI):
                 "src.genre.models",
                 "src.track.models",
                 "src.album.models",
+                "src.playlist.models",
                 "aerich.models"
             ],
         },
@@ -48,6 +49,7 @@ TORTOISE_ORM = {
                 "src.genre.models",
                 "src.track.models",
                 "src.album.models",
+                "src.playlist.models",
                 "aerich.models"
             ],
             "default_connection": "default",
@@ -60,5 +62,6 @@ Tortoise.init_models([
     "src.user.models",
     "src.genre.models",
     "src.track.models",
-    "src.album.models"
+    "src.album.models",
+    "src.playlist.models",
 ], "models")
