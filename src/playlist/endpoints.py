@@ -14,13 +14,14 @@ from .services import upload_playlist_poster_to_s3, delete_file_to_s3
 
 playlist_router = APIRouter()
 
+
 @playlist_router.post("/playlist/", response_model=PlayListOut)
 async def create_playlist(
         name: str = Form(...),
         description: str = Form(...),
         poster: UploadFile = File(...),
         is_hidden: bool = Form(...),
-        track: list[int] = Form(...),
+        track: list[int] = Form(None),
         owner: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create a playlist """
@@ -36,15 +37,18 @@ async def create_playlist(
     play_list = await PlayList.create(
         name=name, description=description, poster=playlist_poster, is_hidden=is_hidden, owner_id=owner.id
     )
-    tracks = await Track.filter(id__in=track)
-    for track in tracks:
-        track_owner = await track.owner
-        if track_owner == owner:
-            await play_list.track.add(track)
-        else:
-            if not track.is_hidden:
+
+    if track is not None:
+        tracks = await Track.filter(id__in=track)
+        for track in tracks:
+            track_owner = await track.owner
+            if track_owner == owner:
                 await play_list.track.add(track)
+            else:
+                if not track.is_hidden:
+                    await play_list.track.add(track)
     return await PlayList_Pydantic.from_tortoise_orm(play_list)
+
 
 @playlist_router.get("/playlists/", response_model=List[PlayListOut])
 async def get_list_of_playlists():
@@ -53,6 +57,7 @@ async def get_list_of_playlists():
         PlayList.filter(is_hidden=False)
     )
 
+
 @playlist_router.get("/playlist/{playlist_id}", response_model=PlayListOut)
 async def get_retrieve_play_list(playlist_id: int):
     """ Get target playlist by id """
@@ -60,12 +65,14 @@ async def get_retrieve_play_list(playlist_id: int):
         await PlayList.get(id=playlist_id)
     )
 
+
 @playlist_router.get("/user/playlists/", response_model=List[PlayListOut])
 async def owners_playlists_list(current_user: User_Pydantic = Depends(get_current_active_user)):
     """ Return the owner's playlists list """
     return await PlayList_Pydantic.from_queryset(
         PlayList.filter(owner=current_user)
     )
+
 
 @playlist_router.put("/user/playlist/{playlist_id}", response_model=PlayListOut)
 async def update_play_list(
@@ -83,6 +90,7 @@ async def update_play_list(
     await playlist_obj.track.clear()
     await playlist_obj.track.add(*tracks_objs)
     return await PlayList_Pydantic.from_queryset_single(PlayList.get(id=playlist_id))
+
 
 @playlist_router.put("/user/playlist/{playlist_id}/poster/", response_model=PlayListOut)
 async def update_play_list_poster(
@@ -107,6 +115,7 @@ async def update_play_list_poster(
     new_poster_path = await upload_playlist_poster_to_s3(poster, playlist_poster_path)
     await PlayList.filter(id=playlist_id).update(poster=new_poster_path)
     return await PlayList_Pydantic.from_queryset_single(PlayList.get(id=playlist_id))
+
 
 @playlist_router.delete("/user/playlist/{playlist_id}")
 async def destroy_playlist(playlist_id: int, current_user: User_Pydantic = Depends(get_current_active_user)):
