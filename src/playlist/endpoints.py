@@ -10,30 +10,40 @@ from src.user.jwt_auth import get_current_active_user
 from src.track.models import Track
 
 from .models import PlayList
-from .services import upload_playlist_poster_to_s3, delete_file_to_s3
+from .services import upload_playlist_poster_to_s3, delete_file_to_s3, get_poster_from_track
 
 playlist_router = APIRouter()
 
 
-@playlist_router.post("/playlist/", response_model=PlayListOut)
+@playlist_router.post("/playlist/") #, response_model=PlayListOut
 async def create_playlist(
         name: str = Form(...),
         description: str = Form(...),
-        poster: UploadFile = File(...),
+        poster: UploadFile | None = None,
         is_hidden: bool = Form(...),
         track: list[int] = Form(None),
         owner: User_Pydantic = Depends(get_current_active_user)
 ):
     """ Create a playlist """
     allowed_extensions = ["png", "jpg", "jpeg"]
-    poster_extension = poster.filename.split('.')
-    if not poster_extension[1] in allowed_extensions:
-        return HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="Invalid posters extension. Try to upload .png, .jpg, or jpeg"
-        )
-    playlist_poster_path = 'playlist/poster/' + f'{name}/' + poster.filename
-    playlist_poster = await upload_playlist_poster_to_s3(poster, playlist_poster_path)
+    if poster is not None:
+        poster_extension = poster.filename.split('.')
+        if not poster_extension[1] in allowed_extensions:
+            return HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="Invalid posters extension. Try to upload .png, .jpg, or jpeg"
+            )
+        playlist_poster_path = 'playlist/poster/' + f'{name}/' + poster.filename
+        playlist_poster = await upload_playlist_poster_to_s3(poster, playlist_poster_path)
+    else:
+        if track is not None:
+            playlist_poster = await get_poster_from_track(track[0])
+        else:
+            return HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="The playlist must contains track or poster"
+            )
+
     play_list = await PlayList.create(
         name=name, description=description, poster=playlist_poster, is_hidden=is_hidden, owner_id=owner.id
     )

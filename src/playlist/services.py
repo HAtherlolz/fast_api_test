@@ -3,6 +3,8 @@ import boto3
 from fastapi import UploadFile
 
 from config.config import Settings
+from src.track.models import Track
+
 
 settings = Settings()
 
@@ -23,3 +25,8 @@ async def delete_file_to_s3(play_list_path: str) -> None:
         "s3", aws_access_key_id=settings.AWS_BUCKET_KEY_ID, aws_secret_access_key=settings.AWS_BUCKET_SECRET_KEY
     )
     s3.Object(settings.AWS_BUKCET_NAME, play_list_path[36:]).delete()
+
+async def get_poster_from_track(track_id: int) -> str:
+    """ Get poster link from track by id """
+    poster_obj = await Track.get(id=track_id)
+    return poster_obj.song_poster
