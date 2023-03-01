@@ -1,6 +1,11 @@
+import io
 from typing import List
+from urllib.request import urlopen, Request
+
+import requests
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Form
+from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from .schemas import PlayListOut, PlayList_Pydantic, PlayListIn_Pydantic, PlayListUpdate
 
@@ -15,7 +20,7 @@ from .services import upload_playlist_poster_to_s3, delete_file_to_s3, get_poste
 playlist_router = APIRouter()
 
 
-@playlist_router.post("/playlist/") #, response_model=PlayListOut
+@playlist_router.post("/playlist/", response_model=PlayListOut)
 async def create_playlist(
         name: str = Form(...),
         description: str = Form(...),
@@ -37,7 +42,13 @@ async def create_playlist(
         playlist_poster = await upload_playlist_poster_to_s3(poster, playlist_poster_path)
     else:
         if track is not None:
-            playlist_poster = await get_poster_from_track(track[0])
+            playlist_poster_link = await get_poster_from_track(track[0])
+            file_name = playlist_poster_link.split('/')[-1]
+            file = urlopen(Request(playlist_poster_link))
+            bytes_file = io.BytesIO(file.read())
+            poster = StarletteUploadFile(file=bytes_file, filename=file_name)
+            playlist_poster_path = 'playlist/poster/' + f'{name}/' + file_name
+            playlist_poster = await upload_playlist_poster_to_s3(poster, playlist_poster_path)
         else:
             return HTTPException(
                 status_code=status.HTTP_406_NOT_ACCEPTABLE,
