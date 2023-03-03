@@ -32,3 +32,4 @@ async def track_poster_create(user_id: int, song: UploadFile, song_poster: Uploa
     track_poster_path = 'tracks_posters/' + f'user_{user_id}/' + song_poster.filename
     tracks_poster_s3_path = await upload_track_to_s3(song_poster, track_poster_path)
     return track_s3_path, tracks_poster_s3_path
+
