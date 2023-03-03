@@ -29,7 +29,7 @@ async def create(
     if not song.filename.split('.')[1] == 'mp3':
         return HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Invalid track extension. Try to upload .mp3")
-    track_s3_path, tracks_poster_s3_path = await track_poster_create(user.id, song, song_poster)
+    track_s3_path, tracks_poster_s3_path = await track_poster_create(user.id, name, song, song_poster)
     track = await Track.create(
         name=name, track_author=track_author, owner_id=user.id,
         text=text, is_hidden=is_hidden, song=track_s3_path,
