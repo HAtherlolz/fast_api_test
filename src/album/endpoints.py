@@ -30,7 +30,7 @@ async def create(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="Invalid posters extension. Try to upload .png, .jpg, or jpeg"
         )
-    album_poster_path = 'poster/' + f'{name}/' + poster.filename
+    album_poster_path = f'poster/user_{user.id}/{name}/' + poster.filename
     poster_s3_path = await upload_track_to_s3(poster, album_poster_path)
     album = await Album.create(
         name=name, description=description, owner_id=user.id,
