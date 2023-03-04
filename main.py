@@ -13,9 +13,12 @@ from src.playlist.endpoints import playlist_router
 settings = Settings()
 
 app = FastAPI(
+    openapi_url="/api/v1/",
+    docs_url="/api/v1/docs/",
+    redoc_url="/api/v1/redoc/",
     title="IrohAxi",
     description="Authors - IrohWeb and Axizy",
-    version="0.0.1",
+    version="1.0.1",
 )
 
 setup_database(app)
